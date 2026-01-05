@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Uploader</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<h2>Upload File</h2>
+
+<form action="/api/files/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="file" required />
+  <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<h2>Uploaded Files</h2>
+<ul id="fileList"></ul>
+
+<script>
+  async function loadFiles() {
+    const res = await fetch("/api/files");
+    const files = await res.json();
+
+    const list = document.getElementById("fileList");
+    list.innerHTML = "";
+
+    files.forEach(file => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${file}
+        <button onclick="deleteFile('${file}')">Delete</button>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  async function deleteFile(filename) {
+    await fetch(`/api/files/${filename}`, {
+      method: "DELETE"
+    });
+    loadFiles();
+  }
+
+  loadFiles();
+</script>
+
+</body>
+</html>
